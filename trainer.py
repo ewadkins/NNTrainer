@@ -177,8 +177,6 @@ class SupervisedTrainer(object):
             table = DynamicConsoleTable(layout)
             table.print_header()
             multiple_rows_per_epoch = batch_output_interval < num_training_batches
-            if multiple_rows_per_epoch:
-                table.print_divider()
 
             while not done:
                 epoch += 1
@@ -259,9 +257,10 @@ class SupervisedTrainer(object):
                         
                     if iteration % num_training_batches == 0 or \
                         iteration % batch_output_interval == 0:
-                        table.finalize()
+                        heavy = False
                         if multiple_rows_per_epoch and iteration % num_training_batches == 0:
-                            table.print_divider()
+                            heavy = True
+                        table.finalize(heavy=heavy)
 
                     # Termination condition
                     if sustained_loss < loss_threshold:

@@ -7,11 +7,13 @@ class DynamicConsoleTable(object):
         self.layout = layout
         self.header = '|'
         self.divider = '|'
+        self.heavy_divider = '|'
         for i in range(len(layout)):
             space = max(0, layout[i]['width'] - len(layout[i]['name']))
             header_string = ' ' * int(space / 2.0) + layout[i]['name'] + ' ' * int(math.ceil(space / 2.0))
             self.header += ' ' + header_string + ' |'
             self.divider += '-' * (len(header_string) + 2) + '|'
+            self.heavy_divider += '=' * (len(header_string) + 2) + '|'
         self.updated = False
     
     def _format_arg(self, arg, properties):
@@ -36,23 +38,23 @@ class DynamicConsoleTable(object):
         else:
             return ' ' * space + s
     
-    def print_header(self):
+    def print_header(self, heavy=True):
         if self.updated:
             self.finalize()
-        print self.divider
+        print self.divider if not heavy else self.heavy_divider
         print self.header
-        print self.divider
+        print self.divider if not heavy else self.heavy_divider
         
-    def print_divider(self):
+    def print_divider(self, heavy=False):
         if self.updated:
             self.finalize()
-        print self.divider
+        print self.divider if not heavy else self.heavy_divider
     
-    def finalize(self):
+    def finalize(self, heavy=False):
         if not self.updated:
             self.update()
         self.updated = False
-        print '\n' + self.divider
+        print '\n' + (self.divider if not heavy else self.heavy_divider)
     
     def update(self, *args):
         self.updated = True
