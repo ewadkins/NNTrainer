@@ -88,7 +88,7 @@ class SupervisedTrainer(object):
               validation_interval=1,
               loss_threshold=0.0,
               sustained_loss_decay_rate=0.9,
-              batch_output_interval=None):
+              row_output_interval=None):
         
         assert loss_fn, 'Must specify a loss_fn (a function that takes (out, y) as input)'
         assert optimizer_fn, 'Must specify a optimizer_fn (a function that takes loss as input)'
@@ -130,7 +130,7 @@ class SupervisedTrainer(object):
             training_label_batches.append(
                 training_labels_permuted[i*batch_size:(i+1)*batch_size])
             
-        batch_output_interval = batch_output_interval or num_training_batches / 4
+        row_output_interval = row_output_interval or num_training_batches
         
         y = tf.placeholder(tf.int64, [None])
         loss = loss_fn(self.out, y)
@@ -176,7 +176,7 @@ class SupervisedTrainer(object):
             print
             table = DynamicConsoleTable(layout)
             table.print_header()
-            multiple_rows_per_epoch = batch_output_interval < num_training_batches
+            multiple_rows_per_epoch = row_output_interval < num_training_batches
 
             while not done:
                 epoch += 1
@@ -237,7 +237,7 @@ class SupervisedTrainer(object):
                     progress_string = '[' + '#' * progress + ' ' * \
                         (self.progress_bar_size - progress) + ']'
                     if iteration % num_training_batches == 0 or \
-                        iteration % batch_output_interval == 0:
+                        iteration % row_output_interval == 0:
                         progress_string = time.strftime("%I:%M:%S %p", time.localtime())
                         
                     if not self.skip_validation:
@@ -256,7 +256,7 @@ class SupervisedTrainer(object):
                                      elapsed)
                         
                     if iteration % num_training_batches == 0 or \
-                        iteration % batch_output_interval == 0:
+                        iteration % row_output_interval == 0:
                         heavy = False
                         if multiple_rows_per_epoch and iteration % num_training_batches == 0:
                             heavy = True

@@ -47,6 +47,8 @@ validation_data = np.reshape(validation_data, [-1, 28, 28])
 # Training
 
 trainer = trainer.SupervisedTrainer(x, out,
+                                    loss_display_interval=100,
+                                    accuracy_display_interval=100,
                                     show_accuracy=False,
                                     loss_display_starting_iteration=5) # Loss super high at beginning
 
@@ -57,6 +59,6 @@ trainer.train(training_data,
               loss_fn=loss_fn,
               optimizer_fn=optimizer_fn,
               accuracy_fn=accuracy_fn,
-              batch_size=100,
-              validation_set_size=10000, # All validation data, could also omit this
-              validation_interval=25) # Evaluates validation data every 25 batches
+              batch_size=100, # trains in batches of 100 training data points
+              validation_set_size=10000, # Evaluate on all 10000 validation data points
+              validation_interval=200) # Evaluates validation data every 300 batches
