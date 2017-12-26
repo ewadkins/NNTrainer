@@ -9,11 +9,11 @@ import trainer
 # Model
 
 # This model achieves about 98.6% accuracy after 8 epochs. About 98.0% after only 4 epochs.
-model = FeedForwardModel([28, 28], 10, [Convolutional2DComponent(5, num_kernels=20, stride=2),
+model = FeedForwardModel([28, 28], 10, [Conv2DComponent(5, num_kernels=20, stride=2),
                                         ActivationComponent(tf.nn.relu),
-                                        Convolutional2DComponent(4, num_kernels=10),
+                                        Conv2DComponent(4, num_kernels=10),
                                         ActivationComponent(tf.nn.relu),
-                                        Convolutional2DComponent(3, num_kernels=5),
+                                        Conv2DComponent(3, num_kernels=5),
                                         ActivationComponent(tf.nn.relu),
                                         DropoutComponent(0.98),
                                         FullyConnectedComponent()])

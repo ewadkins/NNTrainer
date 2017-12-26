@@ -69,7 +69,7 @@ class SupervisedTrainer(object):
         if iteration % self.loss_display_interval == 0 and self.show_loss or override:
             self.display_loss(loss_values, sustained_loss_values, iteration)
         # Show/update accuracy display
-        if not self.skip_validation:
+        if not self.skip_evaluation:
             if iteration % self.accuracy_display_interval == 0 and self.show_accuracy or override:
                 self.display_accuracy(validation_accuracy_values, max_accuracy_values, iteration)
     
@@ -78,7 +78,7 @@ class SupervisedTrainer(object):
               training_labels,
               validation_data=None,
               validation_labels=None,
-              skip_validation=False,
+              skip_evaluation=False,
               loss_fn=None,
               optimizer_fn=None,
               accuracy_fn=None,
@@ -100,13 +100,13 @@ class SupervisedTrainer(object):
             
         assert len(training_data) == len(training_labels), \
             'Number of training data and training labels do not match'
-        if not skip_validation and (validation_data is not None or validation_labels is not None):
+        if not skip_evaluation and (validation_data is not None or validation_labels is not None):
             assert validation_data is not None and validation_labels is not None and \
                 len(validation_data) == len(validation_labels), \
                 'Number of validation data and validation labels do not match'
         else:
-            skip_validation = True
-        if not skip_validation:
+            skip_evaluation = True
+        if not skip_evaluation:
             assert accuracy_fn, \
                 'Must specify an accuracy_fn (a function that takes (out, y) as input),' + \
                 ' in order to evaluate the validation set'
@@ -137,7 +137,7 @@ class SupervisedTrainer(object):
         optimizer = optimizer_fn(loss)
         accuracy = accuracy_fn(self.out, y) if accuracy_fn else None
         
-        self.skip_validation = skip_validation
+        self.skip_evaluation = skip_evaluation
         
         layout = [
             dict(name='Ep.', width=3, align='center'),
@@ -146,7 +146,7 @@ class SupervisedTrainer(object):
             dict(name='Loss', width=8, align='center')] + \
             ([dict(name='Val Acc', width=7, suffix='%', align='center'),
               dict(name='Max Acc', width=7, suffix='%', align='center')] \
-                if not self.skip_validation else []) + \
+                if not self.skip_evaluation else []) + \
             [dict(name='Progress/Timestamp', width=self.progress_bar_size+2, align='center'),
              dict(name='Elapsed (s)', width=7, align='center')]
             
@@ -204,7 +204,7 @@ class SupervisedTrainer(object):
                         sustained_loss_values.append(sustained_loss)
 
                     validation_accuracy = last_validation_accuracy
-                    if not skip_validation and iteration % validation_interval == 0:
+                    if not skip_evaluation and iteration % validation_interval == 0:
                         validation_set_indices = np.random.choice(
                             np.arange(len(validation_data)),
                             size=validation_set_size, replace=False)
@@ -240,7 +240,7 @@ class SupervisedTrainer(object):
                         iteration % row_output_interval == 0:
                         progress_string = time.strftime("%I:%M:%S %p", time.localtime())
                         
-                    if not self.skip_validation:
+                    if not self.skip_evaluation:
                         table.update(epoch,
                                      (iteration - 1) % num_training_batches + 1,
                                      sustained_loss,
